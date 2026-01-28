@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Suit.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">easygo</a> &gt; <a href="index.source.html" class="el_package">klondike.model.hw02</a> &gt; <span class="el_source">Suit.java</span></div><h1>Suit.java</h1><pre class="source lang-java linenums">package klondike.model.hw02;
+
+/**
+ * This enum represents the four suits in a normal deck of cards.
+ * Every suit has a symbol and color (red/black)
+ */
+
+<span class="fc" id="L8">public enum Suit {</span>
+<span class="fc" id="L9">  clubs(&quot;♣&quot;, false),</span>
+<span class="fc" id="L10">  diamonds(&quot;♢&quot;, true),</span>
+<span class="fc" id="L11">  hearts(&quot;♡&quot;, true),</span>
+<span class="fc" id="L12">  spades(&quot;♠&quot;, false);</span>
+
+  private final String symbol;
+  private final boolean isRed;
+
+  /**
+   * Creates a suit with the symbol and color.
+   *
+   * @param symbol the symbol for ths uit
+   * @param isRed  true if the suit is red, if black is false
+   */
+<span class="fc" id="L23">  Suit(String symbol, boolean isRed) {</span>
+<span class="fc" id="L24">    this.symbol = symbol;</span>
+<span class="fc" id="L25">    this.isRed = isRed;</span>
+<span class="fc" id="L26">  }</span>
+
+  /**
+   * gets symbol of the suit.
+   *
+   * @return the symbol as a string
+   */
+
+  public String getSymbol() {
+<span class="nc" id="L35">    return this.symbol;</span>
+  }
+
+  /**
+   * Checks if the suit is red.
+   *
+   * @return true if the suit is red, false in other situations.
+   */
+  public boolean isRed() {
+<span class="nc" id="L44">    return this.isRed;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
