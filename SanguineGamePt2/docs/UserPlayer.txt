@@ -1,0 +1,22 @@
+The Player interface that SanguinePlayer implements is in charge of game data
+such as the player's hand, deck, and scores. We created the PlayerStrategy
+interface for actually doing the decision-making. It has a chooseMove method
+that considers the current SanguineGame state and the Player's input and then
+returns a Move object that indicates the player's intention. The Move interface
+can express two actions — passing the turn or placing a card in a specific row,
+column, and hand index. Different PlayerStrategy implementations handle the
+decision-making differently. HumanPlayerStrategy would ask the user through
+the console to type in their move, while an AIPlayerStrategy would take the
+state of the board from getBoard() and the player's hand from getHand() to
+determine the best move.
+
+To actually implement this in the game, we would
+create a BasicSanguine object and call startGame with the decks of red and
+blue cards. Strategies would then be assigned for each player, something
+along the lines of new HumanPlayerStrategy() for red and new AIPlayerStrategy()
+for blue. In the course of the game loop, check getTurn() to determine whose
+turn it is, then call that player's chooseMove method. The Move returned
+will be either a call to pass() if isPass() is true or to placeCard() with
+getRow(), getCol(), and getHandIndex() if it's a card placement. This will
+allow the BasicSanguine and SanguinePlayer code to remain unmodified while only
+introducing various kinds of players into the game.
