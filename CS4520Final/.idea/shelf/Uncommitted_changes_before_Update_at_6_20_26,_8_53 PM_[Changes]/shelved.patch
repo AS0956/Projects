@@ -1,0 +1,485 @@
+Index: app/src/main/java/com/example/final_ui_skeleton/ui/screens/BasicInformationScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.final_ui_skeleton.ui.screens\n\nimport androidx.compose.foundation.layout.*\nimport androidx.compose.foundation.rememberScrollState\nimport androidx.compose.foundation.verticalScroll\nimport androidx.compose.material.icons.Icons\nimport androidx.compose.material.icons.filled.ArrowDropDown\nimport androidx.compose.material3.*\nimport androidx.compose.runtime.*\nimport androidx.compose.ui.Alignment\nimport androidx.compose.ui.Modifier\nimport androidx.compose.ui.graphics.Color\nimport androidx.compose.ui.text.font.FontFamily\nimport androidx.compose.ui.text.font.FontWeight\nimport androidx.compose.ui.text.input.PasswordVisualTransformation\nimport androidx.compose.ui.text.style.TextAlign\nimport androidx.compose.ui.tooling.preview.Preview\nimport androidx.compose.ui.unit.dp\nimport androidx.compose.ui.unit.sp\nimport androidx.lifecycle.viewmodel.compose.viewModel\nimport com.example.final_ui_skeleton.model.User\nimport com.example.final_ui_skeleton.ui.components.AppColors\nimport com.example.final_ui_skeleton.ui.components.PrimaryButton\nimport com.example.final_ui_skeleton.viewmodel.SproutViewModel\n\nprivate val incomeBrackets = listOf(\n    \"Under $25,000\", \"$25,000 - $50,000\", \"$50,000 - $75,000\",\n    \"$75,000 - $100,000\", \"$100,000 - $150,000\", \"Over $150,000\"\n)\n\nprivate val occupations = listOf(\n    \"Student\", \"Education\", \"Finance\", \"Healthcare\", \"Technology\",\n    \"Retail\", \"Food & Hospitality\", \"Government\", \"Arts & Media\",\n    \"Construction\", \"Legal\", \"Other\"\n)\n\nprivate val savingGoals = listOf(\n    \"Vacation\", \"Education\", \"Big Purchase\", \"Retirement\", \"Debt Payoff\",\n    \"Emergency Fund\", \"A Home\", \"Other\"\n)\n\nprivate val usCities = listOf(\n    \"New York\", \"Los Angeles\", \"Chicago\", \"Houston\", \"Phoenix\",\n    \"Philadelphia\", \"San Antonio\", \"San Diego\", \"Dallas\", \"Boston\",\n    \"Austin\", \"Seattle\", \"Denver\", \"Atlanta\", \"Miami\", \"Other\"\n)\n\n@OptIn(ExperimentalMaterial3Api::class)\n@Composable\nfun BasicInformationScreen(\n    viewModel: SproutViewModel = viewModel(),\n    onSuccess: () -> Unit = {}\n) {\n    var name by remember { mutableStateOf(\"\") }\n    var city by remember { mutableStateOf(\"\") }\n    var incomeBracket by remember { mutableStateOf(\"\") }\n    var occupation by remember { mutableStateOf(\"\") }\n    var purpose by remember { mutableStateOf(\"\") }\n    var email by remember { mutableStateOf(\"\") }\n    var password by remember { mutableStateOf(\"\") }\n\n    var nameError by remember { mutableStateOf(\"\") }\n    var emailError by remember { mutableStateOf(\"\") }\n    var passwordError by remember { mutableStateOf(\"\") }\n    var cityError by remember { mutableStateOf(\"\") }\n    var incomeError by remember { mutableStateOf(\"\") }\n    var occupationError by remember { mutableStateOf(\"\") }\n    var purposeError by remember { mutableStateOf(\"\") }\n\n    fun validate(): Boolean {\n        var valid = true\n        nameError = if (name.isBlank()) { valid = false; \"Name is required\" } else \"\"\n        emailError = when {\n            email.isBlank() -> { valid = false; \"Email is required\" }\n            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> { valid = false; \"Enter a valid email\" }\n            else -> \"\"\n        }\n        passwordError = when {\n            password.isBlank() -> { valid = false; \"Password is required\" }\n            password.length < 6 -> { valid = false; \"Password must be at least 6 characters\" }\n            else -> \"\"\n        }\n        cityError = if (city.isBlank()) { valid = false; \"City is required\" } else \"\"\n        incomeError = if (incomeBracket.isBlank()) { valid = false; \"Income bracket is required\" } else \"\"\n        occupationError = if (occupation.isBlank()) { valid = false; \"Occupation is required\" } else \"\"\n        purposeError = if (purpose.isBlank()) { valid = false; \"Savings goal is required\" } else \"\"\n        return valid\n    }\n\n    Scaffold(containerColor = AppColors.Background) { innerPadding ->\n        Column(\n            modifier = Modifier\n                .padding(innerPadding)\n                .fillMaxSize()\n                .verticalScroll(rememberScrollState())\n                .padding(horizontal = 24.dp),\n            horizontalAlignment = Alignment.CenterHorizontally\n        ) {\n            Spacer(modifier = Modifier.height(48.dp))\n\n            Text(\n                text = \"Let's start with the basics.\",\n                fontFamily = FontFamily.Serif,\n                fontWeight = FontWeight.Bold,\n                fontSize = 27.sp,\n                textAlign = TextAlign.Center\n            )\n\n            Spacer(modifier = Modifier.height(24.dp))\n\n            OutlinedTextField(\n                value = name,\n                onValueChange = { name = it; nameError = \"\" },\n                label = { Text(\"Name\") },\n                isError = nameError.isNotEmpty(),\n                supportingText = { if (nameError.isNotEmpty()) Text(nameError, color = Color.Red) },\n                modifier = Modifier.fillMaxWidth()\n            )\n\n            Spacer(modifier = Modifier.height(8.dp))\n\n            OutlinedTextField(\n                value = email,\n                onValueChange = { email = it; emailError = \"\" },\n                label = { Text(\"Email\") },\n                isError = emailError.isNotEmpty(),\n                supportingText = { if (emailError.isNotEmpty()) Text(emailError, color = Color.Red) },\n                modifier = Modifier.fillMaxWidth()\n            )\n\n            Spacer(modifier = Modifier.height(8.dp))\n\n            OutlinedTextField(\n                value = password,\n                onValueChange = { password = it; passwordError = \"\" },\n                label = { Text(\"Password\") },\n                visualTransformation = PasswordVisualTransformation(),\n                isError = passwordError.isNotEmpty(),\n                supportingText = { if (passwordError.isNotEmpty()) Text(passwordError, color = Color.Red) },\n                modifier = Modifier.fillMaxWidth()\n            )\n\n            Spacer(modifier = Modifier.height(8.dp))\n\n            DropdownField(\n                label = \"City\",\n                options = usCities,\n                selected = city,\n                onSelect = { city = it; cityError = \"\" },\n                error = cityError\n            )\n\n            Spacer(modifier = Modifier.height(8.dp))\n\n            DropdownField(\n                label = \"Income Bracket\",\n                options = incomeBrackets,\n                selected = incomeBracket,\n                onSelect = { incomeBracket = it; incomeError = \"\" },\n                error = incomeError\n            )\n\n            Spacer(modifier = Modifier.height(8.dp))\n\n            DropdownField(\n                label = \"Occupation/Industry\",\n                options = occupations,\n                selected = occupation,\n                onSelect = { occupation = it; occupationError = \"\" },\n                error = occupationError\n            )\n\n            Spacer(modifier = Modifier.height(8.dp))\n\n            DropdownField(\n                label = \"What are you saving for?\",\n                options = savingGoals,\n                selected = purpose,\n                onSelect = { purpose = it; purposeError = \"\" },\n                error = purposeError\n            )\n\n            Spacer(modifier = Modifier.height(24.dp))\n\n            PrimaryButton(\n                text = \"Continue\",\n                onClick = {\n                    if (validate()) {\n                        val user = User(\n                            name = name,\n                            city = city,\n                            email = email,\n                            password = password,\n                            incomeBracket = incomeBracket,\n                            occupation = occupation,\n                            purpose = purpose\n                        )\n                        viewModel.signUp(email, password, user, onSuccess = onSuccess)\n                    }\n                },\n                modifier = Modifier.fillMaxWidth()\n            )\n\n            Spacer(modifier = Modifier.height(32.dp))\n        }\n    }\n}\n\n@OptIn(ExperimentalMaterial3Api::class)\n@Composable\nfun DropdownField(\n    label: String,\n    options: List<String>,\n    selected: String,\n    onSelect: (String) -> Unit,\n    error: String = \"\"\n) {\n    var expanded by remember { mutableStateOf(false) }\n\n    ExposedDropdownMenuBox(\n        expanded = expanded,\n        onExpandedChange = { expanded = !expanded },\n        modifier = Modifier.fillMaxWidth()\n    ) {\n        OutlinedTextField(\n            value = selected,\n            onValueChange = {},\n            readOnly = true,\n            label = { Text(label) },\n            trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },\n            isError = error.isNotEmpty(),\n            supportingText = { if (error.isNotEmpty()) Text(error, color = Color.Red) },\n            modifier = Modifier\n                .menuAnchor()\n                .fillMaxWidth()\n        )\n        ExposedDropdownMenu(\n            expanded = expanded,\n            onDismissRequest = { expanded = false }\n        ) {\n            options.forEach { option ->\n                DropdownMenuItem(\n                    text = { Text(option) },\n                    onClick = {\n                        onSelect(option)\n                        expanded = false\n                    }\n                )\n            }\n        }\n    }\n}\n\n@Preview(showBackground = true, showSystemUi = true)\n@Composable\nfun PreviewBasicInformationScreen() {\n    BasicInformationScreen()\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/final_ui_skeleton/ui/screens/BasicInformationScreen.kt b/app/src/main/java/com/example/final_ui_skeleton/ui/screens/BasicInformationScreen.kt
+--- a/app/src/main/java/com/example/final_ui_skeleton/ui/screens/BasicInformationScreen.kt	(revision 7d1d62608432ea383c7db778c52077c4b4e6048b)
++++ b/app/src/main/java/com/example/final_ui_skeleton/ui/screens/BasicInformationScreen.kt	(date 1781985991334)
+@@ -4,6 +4,7 @@
+ import androidx.compose.foundation.rememberScrollState
+ import androidx.compose.foundation.verticalScroll
+ import androidx.compose.material.icons.Icons
++import androidx.compose.material.icons.automirrored.filled.ArrowBack
+ import androidx.compose.material.icons.filled.ArrowDropDown
+ import androidx.compose.material3.*
+ import androidx.compose.runtime.*
+@@ -49,7 +50,8 @@
+ @Composable
+ fun BasicInformationScreen(
+     viewModel: SproutViewModel = viewModel(),
+-    onSuccess: () -> Unit = {}
++    onSuccess: () -> Unit = {},
++    onBack: () -> Unit = {}
+ ) {
+     var name by remember { mutableStateOf("") }
+     var city by remember { mutableStateOf("") }
+@@ -87,7 +89,25 @@
+         return valid
+     }
+ 
+-    Scaffold(containerColor = AppColors.Background) { innerPadding ->
++    Scaffold(
++        containerColor = AppColors.Background,
++        topBar = {
++            TopAppBar(
++                title = {},
++                navigationIcon = {
++                    IconButton(onClick = onBack) {
++                        Icon(
++                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
++                            contentDescription = "Back"
++                        )
++                    }
++                },
++                colors = TopAppBarDefaults.topAppBarColors(
++                    containerColor = AppColors.Background
++                )
++            )
++        }
++    ) { innerPadding ->
+         Column(
+             modifier = Modifier
+                 .padding(innerPadding)
+@@ -96,7 +116,7 @@
+                 .padding(horizontal = 24.dp),
+             horizontalAlignment = Alignment.CenterHorizontally
+         ) {
+-            Spacer(modifier = Modifier.height(48.dp))
++            Spacer(modifier = Modifier.height(16.dp))
+ 
+             Text(
+                 text = "Let's start with the basics.",
+Index: app/src/main/java/com/example/final_ui_skeleton/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.final_ui_skeleton\n\nimport android.os.Bundle\nimport androidx.activity.ComponentActivity\nimport androidx.activity.compose.setContent\nimport androidx.activity.enableEdgeToEdge\nimport androidx.compose.runtime.Composable\nimport androidx.lifecycle.viewmodel.compose.viewModel\nimport androidx.navigation.compose.NavHost\nimport androidx.navigation.compose.composable\nimport androidx.navigation.compose.rememberNavController\nimport com.example.final_ui_skeleton.ui.screens.AIRecommendationsScreen\nimport com.example.final_ui_skeleton.ui.screens.AddExpenseScreen\nimport com.example.final_ui_skeleton.ui.screens.BasicInformationScreen\nimport com.example.final_ui_skeleton.ui.screens.DashboardScreen\nimport com.example.final_ui_skeleton.ui.screens.DemographicScreen\nimport com.example.final_ui_skeleton.ui.screens.PrivacyScreen\nimport com.example.final_ui_skeleton.ui.screens.SavingsGoalScreen\nimport com.example.final_ui_skeleton.ui.screens.SettingsScreen\nimport com.example.final_ui_skeleton.ui.screens.SignInScreen\nimport com.example.final_ui_skeleton.ui.screens.SpendingHistoryScreen\nimport com.example.final_ui_skeleton.ui.screens.WelcomeScreen\nimport com.example.final_ui_skeleton.ui.theme.Final_UI_SkeletonTheme\nimport com.example.final_ui_skeleton.viewmodel.SproutViewModel\n\nclass MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        enableEdgeToEdge()\n        setContent {\n            Final_UI_SkeletonTheme {\n                SproutApp()\n            }\n        }\n    }\n}\n\n@Composable\nfun SproutApp() {\n    val navController = rememberNavController()\n    // one shared ViewModel for the whole app\n    val viewModel: SproutViewModel = viewModel()\n\n    // decide start destination based on login state\n    val startDest = if (viewModel.isLoggedIn) \"dashboard\" else \"welcome\"\n\n    NavHost(navController = navController, startDestination = startDest) {\n\n        composable(\"welcome\") {\n            WelcomeScreen(onContinue = { navController.navigate(\"signin\") })\n        }\n\n        composable(\"signin\") {\n            SignInScreen(\n                viewModel = viewModel,\n                onSignIn = {\n                    navController.navigate(\"dashboard\") {\n                        popUpTo(\"welcome\") { inclusive = true }\n                    }\n                },\n                onGoogle = {},\n                onApple = {},\n                onCreateAccount = { navController.navigate(\"basicinfo\") }\n            )\n        }\n\n        composable(\"basicinfo\") {\n            BasicInformationScreen(\n                viewModel = viewModel,\n                onSuccess = {\n                    navController.navigate(\"demographic\") {\n                        popUpTo(\"welcome\") { inclusive = true }\n                    }\n                }\n            )\n        }\n\n        composable(\"demographic\") {\n            DemographicScreen(\n                viewModel = viewModel,\n                onGotchaClick = { navController.navigate(\"savingsgoal\") }\n            )\n        }\n\n        composable(\"savingsgoal\") {\n            SavingsGoalScreen(onNext = { navController.navigate(\"privacy\") })\n        }\n\n        composable(\"privacy\") {\n            PrivacyScreen(onTakeHome = {\n                navController.navigate(\"dashboard\") {\n                    popUpTo(\"welcome\") { inclusive = true }\n                }\n            })\n        }\n\n        composable(\"dashboard\") {\n            DashboardScreen(viewModel = viewModel, navController = navController)\n        }\n\n        composable(\"budgets\") {\n            SpendingHistoryScreen(viewModel = viewModel, navController = navController)\n        }\n\n        composable(\"addexpense\") {\n            AddExpenseScreen(viewModel = viewModel, navController = navController)\n        }\n\n        composable(\"recommendations\") {\n            AIRecommendationsScreen(navController = navController)\n        }\n\n        composable(\"settings\") {\n            SettingsScreen(\n                viewModel = viewModel,\n                onLogout = {\n                    navController.navigate(\"welcome\") {\n                        popUpTo(\"dashboard\") { inclusive = true }\n                    }\n                }\n            )\n        }\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/final_ui_skeleton/MainActivity.kt b/app/src/main/java/com/example/final_ui_skeleton/MainActivity.kt
+--- a/app/src/main/java/com/example/final_ui_skeleton/MainActivity.kt	(revision 7d1d62608432ea383c7db778c52077c4b4e6048b)
++++ b/app/src/main/java/com/example/final_ui_skeleton/MainActivity.kt	(date 1781986777807)
+@@ -29,7 +29,7 @@
+         enableEdgeToEdge()
+         setContent {
+             Final_UI_SkeletonTheme {
+-                SproutApp()
++                SproutNavGraph()
+             }
+         }
+     }
+Index: app/src/main/java/com/example/final_ui_skeleton/ui/screens/WelcomeScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.final_ui_skeleton.ui.screens\n\nimport androidx.compose.foundation.Image\nimport androidx.compose.foundation.layout.*\nimport androidx.compose.material3.Scaffold\nimport androidx.compose.material3.Text\nimport androidx.compose.runtime.Composable\nimport androidx.compose.ui.Alignment\nimport androidx.compose.ui.Modifier\nimport androidx.compose.ui.res.painterResource\nimport androidx.compose.ui.tooling.preview.Preview\nimport androidx.compose.ui.unit.dp\nimport com.example.final_ui_skeleton.R\nimport com.example.final_ui_skeleton.ui.components.AppBackground\nimport com.example.final_ui_skeleton.ui.components.AppBottomBar\nimport com.example.final_ui_skeleton.ui.components.AppColors\nimport com.example.final_ui_skeleton.ui.components.PrimaryButton\nimport com.example.final_ui_skeleton.ui.components.ScreenHeading\n\n/**\n * 1. What: Displays the welcome screen with the Sprout logo and a continue button.\n * 2. Who: Called by the NavHost when the app is first launched.\n * 3. When: Executed at app startup before the user signs in.\n */\n@Composable\nfun WelcomeScreen(onContinue: () -> Unit) {\n    Scaffold(\n        containerColor = AppColors.Background,\n    ) { padding ->\n        Column(\n            modifier = Modifier\n                .fillMaxSize()\n                .padding(padding),\n            horizontalAlignment = Alignment.CenterHorizontally,\n            verticalArrangement = Arrangement.Center\n        ) {\n            Image(\n                painter = painterResource(id = R.drawable.sprout_logo),\n                contentDescription = \"Sprout logo\",\n                modifier = Modifier.size(100.dp)\n            )\n\n            Spacer(Modifier.height(24.dp))\n\n            ScreenHeading(\"Welcome to Sprout!\")\n\n            Spacer(Modifier.height(8.dp))\n\n            Text(\"Here's to your financial well-being!\")\n\n            Spacer(Modifier.height(40.dp))\n\n            // navigates to sign in screen\n            PrimaryButton(\n                text = \"Continue\",\n                onClick = onContinue,\n                modifier = Modifier.fillMaxWidth()\n            )\n        }\n    }\n}\n\n@Preview(showBackground = true)\n@Composable\nfun WelcomeScreenPreview() {\n    WelcomeScreen(onContinue = {})\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/final_ui_skeleton/ui/screens/WelcomeScreen.kt b/app/src/main/java/com/example/final_ui_skeleton/ui/screens/WelcomeScreen.kt
+--- a/app/src/main/java/com/example/final_ui_skeleton/ui/screens/WelcomeScreen.kt	(revision 7d1d62608432ea383c7db778c52077c4b4e6048b)
++++ b/app/src/main/java/com/example/final_ui_skeleton/ui/screens/WelcomeScreen.kt	(date 1781985699697)
+@@ -30,7 +30,8 @@
+         Column(
+             modifier = Modifier
+                 .fillMaxSize()
+-                .padding(padding),
++                .padding(padding)
++                .padding(horizontal = 24.dp), // add this
+             horizontalAlignment = Alignment.CenterHorizontally,
+             verticalArrangement = Arrangement.Center
+         ) {
+@@ -48,9 +49,8 @@
+ 
+             Text("Here's to your financial well-being!")
+ 
+-            Spacer(Modifier.height(40.dp))
++            Spacer(Modifier.height(32.dp))
+ 
+-            // navigates to sign in screen
+             PrimaryButton(
+                 text = "Continue",
+                 onClick = onContinue,
+Index: app/src/main/java/com/example/final_ui_skeleton/ui/components/AppBottomBar.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.final_ui_skeleton.ui.components\n\nimport androidx.compose.material3.NavigationBar\nimport androidx.compose.material3.NavigationBarItem\nimport androidx.compose.material3.Text\nimport androidx.compose.runtime.Composable\nimport androidx.compose.ui.graphics.Color\nimport androidx.compose.ui.unit.sp\nimport androidx.navigation.NavController\nimport androidx.navigation.compose.currentBackStackEntryAsState\n\n@Composable\nfun AppBottomBar(navController: NavController? = null) {\n    val currentRoute = navController\n        ?.currentBackStackEntryAsState()?.value?.destination?.route\n\n    NavigationBar(containerColor = Color.White) {\n        NavigationBarItem(\n            selected = currentRoute == \"dashboard\",\n            onClick = { navController?.navigate(\"dashboard\") },\n            icon = { Text(\"\uD83C\uDFE0\", fontSize = 18.sp) },\n            label = { Text(\"Dashboard\") }\n        )\n        NavigationBarItem(\n            selected = currentRoute == \"budgets\",\n            onClick = { navController?.navigate(\"budgets\") },\n            icon = { Text(\"\uD83D\uDCB0\", fontSize = 18.sp) },\n            label = { Text(\"Budgets\") }\n        )\n        NavigationBarItem(\n            selected = currentRoute == \"recommendations\",\n            onClick = { navController?.navigate(\"recommendations\") },\n            icon = { Text(\"\uD83C\uDF31\", fontSize = 18.sp) },\n            label = { Text(\"Recommend\") }\n        )\n        NavigationBarItem(\n            selected = currentRoute == \"settings\",\n            onClick = { navController?.navigate(\"settings\") },\n            icon = { Text(\"⚙\uFE0F\", fontSize = 18.sp) },\n            label = { Text(\"Settings\") }\n        )\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/final_ui_skeleton/ui/components/AppBottomBar.kt b/app/src/main/java/com/example/final_ui_skeleton/ui/components/AppBottomBar.kt
+--- a/app/src/main/java/com/example/final_ui_skeleton/ui/components/AppBottomBar.kt	(revision 7d1d62608432ea383c7db778c52077c4b4e6048b)
++++ b/app/src/main/java/com/example/final_ui_skeleton/ui/components/AppBottomBar.kt	(date 1781986796030)
+@@ -5,39 +5,48 @@
+ import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
+ import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.sp
+-import androidx.navigation.NavController
+-import androidx.navigation.compose.currentBackStackEntryAsState
+ 
++// A bar at the bottom of the app used for navigation
+ @Composable
+-fun AppBottomBar(navController: NavController? = null) {
+-    val currentRoute = navController
+-        ?.currentBackStackEntryAsState()?.value?.destination?.route
+-
++fun AppBottomBar(
++    currentRoute: String = "dashboard",
++    onDashboard: () -> Unit = {},
++    onBudgets: () -> Unit = {},
++    onRecommend: () -> Unit = {},
++    onSettings: () -> Unit = {}
++) {
+     NavigationBar(containerColor = Color.White) {
+         NavigationBarItem(
+             selected = currentRoute == "dashboard",
+-            onClick = { navController?.navigate("dashboard") },
++            onClick = onDashboard,
+             icon = { Text("🏠", fontSize = 18.sp) },
+             label = { Text("Dashboard") }
+         )
+         NavigationBarItem(
+             selected = currentRoute == "budgets",
+-            onClick = { navController?.navigate("budgets") },
++            onClick = onBudgets,
+             icon = { Text("💰", fontSize = 18.sp) },
+             label = { Text("Budgets") }
+         )
+         NavigationBarItem(
+-            selected = currentRoute == "recommendations",
+-            onClick = { navController?.navigate("recommendations") },
++            selected = currentRoute == "recommend",
++            onClick = onRecommend,
+             icon = { Text("🌱", fontSize = 18.sp) },
+             label = { Text("Recommend") }
+         )
+         NavigationBarItem(
+             selected = currentRoute == "settings",
+-            onClick = { navController?.navigate("settings") },
++            onClick = onSettings,
+             icon = { Text("⚙️", fontSize = 18.sp) },
+             label = { Text("Settings") }
+         )
+     }
++}
++
++@Preview
++@Composable
++fun PreviewAppBottomBar() {
++    AppBottomBar()
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/final_ui_skeleton/ui/screens/DashboardScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.final_ui_skeleton.ui.screens\n\nimport androidx.compose.foundation.layout.*\nimport androidx.compose.material3.*\nimport androidx.compose.runtime.Composable\nimport androidx.compose.runtime.LaunchedEffect\nimport androidx.compose.runtime.collectAsState\nimport androidx.compose.runtime.getValue\nimport androidx.compose.ui.Alignment\nimport androidx.compose.ui.Modifier\nimport androidx.compose.ui.tooling.preview.Preview\nimport androidx.compose.ui.unit.dp\nimport androidx.lifecycle.viewmodel.compose.viewModel\nimport androidx.navigation.NavController\nimport com.example.final_ui_skeleton.ui.components.AppBackground\nimport com.example.final_ui_skeleton.ui.components.AppBottomBar\nimport com.example.final_ui_skeleton.ui.components.AppColors\nimport com.example.final_ui_skeleton.ui.components.BudgetProgressRow\nimport com.example.final_ui_skeleton.ui.components.SectionCard\nimport com.example.final_ui_skeleton.viewmodel.SproutViewModel\n\n/**\n * 1. What: Main home screen showing budget overview, savings goal, and AI insights.\n * 2. Who: Called by the NavHost after the user signs in or completes onboarding.\n * 3. When: Executed when the user lands on the home screen.\n */\n@Composable\nfun DashboardScreen(\n    viewModel: SproutViewModel = viewModel(),\n    navController: NavController? = null\n) {\n    val userProfile by viewModel.userProfile.collectAsState()\n    val expenses by viewModel.expenses.collectAsState()\n\n    LaunchedEffect(Unit) {\n        viewModel.loadUserProfile()\n        viewModel.startListeningToExpenses()\n    }\n\n    AppBackground {\n        Scaffold(\n            containerColor = androidx.compose.ui.graphics.Color.Transparent,\n            bottomBar = { AppBottomBar(navController = navController) }\n        ) { innerPadding ->\n            Column(\n                modifier = Modifier\n                    .padding(innerPadding)\n                    .fillMaxSize()\n                    .padding(16.dp)\n            ) {\n                Row(verticalAlignment = Alignment.CenterVertically) {\n                    val initials = userProfile?.name\n                        ?.split(\" \")\n                        ?.mapNotNull { it.firstOrNull()?.toString() }\n                        ?.take(2)\n                        ?.joinToString(\"\") ?: \"?\"\n                    Text(initials)\n                    Spacer(Modifier.width(8.dp))\n                    Text(\n                        \"Welcome ${userProfile?.name ?: \"...\"}!\",\n                        style = MaterialTheme.typography.headlineSmall\n                    )\n                }\n\n                Spacer(Modifier.height(16.dp))\n\n                Row(modifier = Modifier.fillMaxWidth()) {\n                    SectionCard(modifier = Modifier.weight(1f).padding(end = 4.dp)) {\n                        Text(\"Budget Overview\")\n                        Text(\"Monthly Budget:\")\n                        Text(\"$1,200\")\n                        Text(\"${expenses.size} expenses logged\")\n                    }\n                    SectionCard(modifier = Modifier.weight(1f).padding(start = 4.dp)) {\n                        Text(\"Spending Snapshot\")\n                        val total = expenses.sumOf { it.second.amount }\n                        Text(\"Total spent:\")\n                        Text(\"$${\"%.2f\".format(total)}\")\n                    }\n                }\n\n                Spacer(Modifier.height(16.dp))\n\n                SectionCard {\n                    BudgetProgressRow(\n                        label = \"Saving for: ${userProfile?.purpose ?: \"...\"}\",\n                        progress = 0.66f,\n                        leftAmount = \"$660\",\n                        rightAmount = \"$1,000\"\n                    )\n                    Text(\"$660 of $1,000 saved\")\n                }\n\n                Spacer(Modifier.height(16.dp))\n\n                SectionCard {\n                    Text(\"Insights\")\n                    Spacer(Modifier.height(8.dp))\n                    Text(\"You've made considerable progress towards your upcoming budget! Continue spending less on dining and you'll reach your goal in 2 months!\")\n                    Spacer(Modifier.height(4.dp))\n                    Text(\"View budget\", color = AppColors.Primary)\n                    Spacer(Modifier.height(8.dp))\n                    Text(\"We noticed you seem to be buying the same produce twice a week...\")\n                    Spacer(Modifier.height(4.dp))\n                    Text(\"View AI recommendations\", color = AppColors.Primary)\n                }\n            }\n        }\n    }\n}\n\n@Preview(showBackground = true)\n@Composable\nfun DashboardScreenPreview() {\n    DashboardScreen()\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/final_ui_skeleton/ui/screens/DashboardScreen.kt b/app/src/main/java/com/example/final_ui_skeleton/ui/screens/DashboardScreen.kt
+--- a/app/src/main/java/com/example/final_ui_skeleton/ui/screens/DashboardScreen.kt	(revision 7d1d62608432ea383c7db778c52077c4b4e6048b)
++++ b/app/src/main/java/com/example/final_ui_skeleton/ui/screens/DashboardScreen.kt	(date 1781986805890)
+@@ -1,5 +1,6 @@
+ package com.example.final_ui_skeleton.ui.screens
+ 
++import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.*
+ import androidx.compose.material3.*
+ import androidx.compose.runtime.Composable
+@@ -8,10 +9,12 @@
+ import androidx.compose.runtime.getValue
+ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
++import androidx.compose.ui.text.font.FontFamily
++import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.dp
++import androidx.compose.ui.unit.sp
+ import androidx.lifecycle.viewmodel.compose.viewModel
+-import androidx.navigation.NavController
+ import com.example.final_ui_skeleton.ui.components.AppBackground
+ import com.example.final_ui_skeleton.ui.components.AppBottomBar
+ import com.example.final_ui_skeleton.ui.components.AppColors
+@@ -27,11 +30,14 @@
+ @Composable
+ fun DashboardScreen(
+     viewModel: SproutViewModel = viewModel(),
+-    navController: NavController? = null
++    onNavigateBudgets: () -> Unit = {},
++    onNavigateRecommend: () -> Unit = {},
++    onNavigateSettings: () -> Unit = {}
+ ) {
+     val userProfile by viewModel.userProfile.collectAsState()
+     val expenses by viewModel.expenses.collectAsState()
+ 
++    // start loading data when screen opens
+     LaunchedEffect(Unit) {
+         viewModel.loadUserProfile()
+         viewModel.startListeningToExpenses()
+@@ -40,47 +46,57 @@
+     AppBackground {
+         Scaffold(
+             containerColor = androidx.compose.ui.graphics.Color.Transparent,
+-            bottomBar = { AppBottomBar(navController = navController) }
++            bottomBar = {
++                AppBottomBar(
++                    currentRoute = "dashboard",
++                    onDashboard = {},
++                    onBudgets = onNavigateBudgets,
++                    onRecommend = onNavigateRecommend,
++                    onSettings = onNavigateSettings
++                )
++            }
+         ) { innerPadding ->
+             Column(
+                 modifier = Modifier
+                     .padding(innerPadding)
+                     .fillMaxSize()
+-                    .padding(16.dp)
++                    .padding(horizontal = 16.dp)
+             ) {
+-                Row(verticalAlignment = Alignment.CenterVertically) {
+-                    val initials = userProfile?.name
+-                        ?.split(" ")
+-                        ?.mapNotNull { it.firstOrNull()?.toString() }
+-                        ?.take(2)
+-                        ?.joinToString("") ?: "?"
+-                    Text(initials)
+-                    Spacer(Modifier.width(8.dp))
+-                    Text(
+-                        "Welcome ${userProfile?.name ?: "..."}!",
+-                        style = MaterialTheme.typography.headlineSmall
+-                    )
+-                }
++                Spacer(Modifier.height(20.dp))
++
++                // greeting
++                val firstName = userProfile?.name?.split(" ")?.firstOrNull() ?: "..."
++                Text(
++                    "Welcome, $firstName!",
++                    style = MaterialTheme.typography.headlineSmall,
++                    fontWeight = FontWeight.Bold,
++                    fontFamily = FontFamily.Serif
++                )
+ 
+                 Spacer(Modifier.height(16.dp))
+ 
++                // two cards side by side
+                 Row(modifier = Modifier.fillMaxWidth()) {
+-                    SectionCard(modifier = Modifier.weight(1f).padding(end = 4.dp)) {
+-                        Text("Budget Overview")
+-                        Text("Monthly Budget:")
+-                        Text("$1,200")
+-                        Text("${expenses.size} expenses logged")
++                    SectionCard(modifier = Modifier.weight(1f).padding(end = 6.dp)) {
++                        Text("Budget Overview", fontWeight = FontWeight.Bold, fontSize = 13.sp)
++                        Spacer(Modifier.height(6.dp))
++                        Text("Monthly Budget", fontSize = 12.sp)
++                        Text("$1,200", fontWeight = FontWeight.Bold, fontSize = 16.sp)
++                        Spacer(Modifier.height(4.dp))
++                        Text("${expenses.size} expenses logged", fontSize = 12.sp)
+                     }
+-                    SectionCard(modifier = Modifier.weight(1f).padding(start = 4.dp)) {
+-                        Text("Spending Snapshot")
++                    SectionCard(modifier = Modifier.weight(1f).padding(start = 6.dp)) {
++                        Text("Spending Snapshot", fontWeight = FontWeight.Bold, fontSize = 13.sp)
++                        Spacer(Modifier.height(6.dp))
++                        Text("Total spent", fontSize = 12.sp)
+                         val total = expenses.sumOf { it.second.amount }
+-                        Text("Total spent:")
+-                        Text("$${"%.2f".format(total)}")
++                        Text("${"$"}${"%.2f".format(total)}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                     }
+                 }
+ 
+                 Spacer(Modifier.height(16.dp))
+ 
++                // savings goal progress
+                 SectionCard {
+                     BudgetProgressRow(
+                         label = "Saving for: ${userProfile?.purpose ?: "..."}",
+@@ -88,21 +104,44 @@
+                         leftAmount = "$660",
+                         rightAmount = "$1,000"
+                     )
+-                    Text("$660 of $1,000 saved")
++                    Spacer(Modifier.height(4.dp))
++                    Text("\$660 of \$1,000 saved", fontSize = 13.sp)
+                 }
+ 
+                 Spacer(Modifier.height(16.dp))
+ 
++                // insights with clickable links
+                 SectionCard {
+-                    Text("Insights")
+-                    Spacer(Modifier.height(8.dp))
+-                    Text("You've made considerable progress towards your upcoming budget! Continue spending less on dining and you'll reach your goal in 2 months!")
++                    Text("Insights", fontWeight = FontWeight.Bold, fontSize = 16.sp)
++                    Spacer(Modifier.height(10.dp))
++
++                    Text(
++                        "You've made considerable progress towards your goal! Continue spending less on dining and you'll reach it in 2 months.",
++                        fontSize = 13.sp
++                    )
+                     Spacer(Modifier.height(4.dp))
+-                    Text("View budget", color = AppColors.Primary)
+-                    Spacer(Modifier.height(8.dp))
+-                    Text("We noticed you seem to be buying the same produce twice a week...")
++                    Text(
++                        "View budget →",
++                        color = AppColors.Primary,
++                        fontWeight = FontWeight.SemiBold,
++                        fontSize = 13.sp,
++                        modifier = Modifier.clickable { onNavigateBudgets() }
++                    )
++
++                    Spacer(Modifier.height(12.dp))
++
++                    Text(
++                        "We noticed you seem to be buying the same produce twice a week...",
++                        fontSize = 13.sp
++                    )
+                     Spacer(Modifier.height(4.dp))
+-                    Text("View AI recommendations", color = AppColors.Primary)
++                    Text(
++                        "View AI recommendations →",
++                        color = AppColors.Primary,
++                        fontWeight = FontWeight.SemiBold,
++                        fontSize = 13.sp,
++                        modifier = Modifier.clickable { onNavigateRecommend() }
++                    )
+                 }
+             }
+         }
+Index: app/src/main/java/com/example/final_ui_skeleton/ui/screens/app/src/main/java/com/example/final_ui_skeleton/NavGraph.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/final_ui_skeleton/ui/screens/app/src/main/java/com/example/final_ui_skeleton/NavGraph.kt b/app/src/main/java/com/example/final_ui_skeleton/ui/screens/app/src/main/java/com/example/final_ui_skeleton/NavGraph.kt
+new file mode 100644
+--- /dev/null	(date 1781986766535)
++++ b/app/src/main/java/com/example/final_ui_skeleton/ui/screens/app/src/main/java/com/example/final_ui_skeleton/NavGraph.kt	(date 1781986766535)
+@@ -0,0 +1,85 @@
++package com.example.final_ui_skeleton
++
++import androidx.compose.runtime.Composable
++import androidx.navigation.compose.NavHost
++import androidx.navigation.compose.composable
++import androidx.navigation.compose.rememberNavController
++import com.example.final_ui_skeleton.ui.screens.*
++
++/**
++ * 1. What: Defines all navigation routes and wires screens together.
++ * 2. Who: Called from MainActivity as the root composable.
++ * 3. When: Executed at app startup to set up the nav graph.
++ */
++@Composable
++fun SproutNavGraph() {
++    val navController = rememberNavController()
++
++    NavHost(navController = navController, startDestination = "welcome") {
++
++        composable("welcome") {
++            WelcomeScreen(
++                onContinue = { navController.navigate("signIn") }
++            )
++        }
++
++        composable("signIn") {
++            SignInScreen(
++                onSignIn = { navController.navigate("dashboard") {
++                    popUpTo("welcome") { inclusive = true }
++                }},
++                onCreateAccount = { navController.navigate("basicInfo") }
++            )
++        }
++
++        composable("basicInfo") {
++            BasicInformationScreen(
++                onSuccess = { navController.navigate("demographic") },
++                onBack = { navController.popBackStack() }
++            )
++        }
++
++        composable("demographic") {
++            DemographicScreen(
++                onGotchaClick = { navController.navigate("dashboard") {
++                    popUpTo("welcome") { inclusive = true }
++                }}
++            )
++        }
++
++        composable("dashboard") {
++            DashboardScreen(
++                onNavigateBudgets = { navController.navigate("budgets") },
++                onNavigateRecommend = { navController.navigate("recommend") },
++                onNavigateSettings = { navController.navigate("settings") }
++            )
++        }
++
++        composable("budgets") {
++            BudgetSnapshotScreen(
++                onNavigateDashboard = { navController.navigate("dashboard") },
++                onNavigateRecommend = { navController.navigate("recommend") },
++                onNavigateSettings = { navController.navigate("settings") }
++            )
++        }
++
++        composable("recommend") {
++            AIRecommendationsScreen(
++                onNavigateDashboard = { navController.navigate("dashboard") },
++                onNavigateBudgets = { navController.navigate("budgets") },
++                onNavigateSettings = { navController.navigate("settings") }
++            )
++        }
++
++        composable("settings") {
++            SettingsScreen(
++                onLogout = { navController.navigate("signIn") {
++                    popUpTo("welcome") { inclusive = true }
++                }},
++                onNavigateDashboard = { navController.navigate("dashboard") },
++                onNavigateBudgets = { navController.navigate("budgets") },
++                onNavigateRecommend = { navController.navigate("recommend") }
++            )
++        }
++    }
++}
+\ No newline at end of file
+Index: .idea/deploymentTargetSelector.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"deploymentTargetSelector\">\n    <selectionStates>\n      <SelectionState runConfigName=\"app\">\n        <option name=\"selectionMode\" value=\"DROPDOWN\" />\n        <DialogSelection />\n      </SelectionState>\n      <SelectionState runConfigName=\"DashboardScreenPreview\">\n        <option name=\"selectionMode\" value=\"DROPDOWN\" />\n        <DialogSelection />\n      </SelectionState>\n    </selectionStates>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+--- a/.idea/deploymentTargetSelector.xml	(revision 7d1d62608432ea383c7db778c52077c4b4e6048b)
++++ b/.idea/deploymentTargetSelector.xml	(date 1781985537682)
+@@ -6,10 +6,6 @@
+         <option name="selectionMode" value="DROPDOWN" />
+         <DialogSelection />
+       </SelectionState>
+-      <SelectionState runConfigName="DashboardScreenPreview">
+-        <option name="selectionMode" value="DROPDOWN" />
+-        <DialogSelection />
+-      </SelectionState>
+     </selectionStates>
+   </component>
+ </project>
+\ No newline at end of file
